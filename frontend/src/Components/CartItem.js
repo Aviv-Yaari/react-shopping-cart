@@ -1,17 +1,18 @@
-import CartData from "../store/cart-data";
+import { useSelector, useDispatch } from "react-redux";
+import { addItem, removeItem, clear, toggle } from "../store/cartSlice";
 import { useContext } from "react";
 
 const CartItem = (props) => {
-  const cart = useContext(CartData);
+  const cart = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
+  const item = cart.items.find((item) => item._id === props.item._id);
 
   const addHandler = () => {
-    cart.addItem(props.item);
+    dispatch(addItem(props.item));
   };
   const removeHandler = () => {
-    cart.removeItem(props.item);
+    dispatch(removeItem(props.item));
   };
-
-  const cartItem = cart.findItem(props.item);
   return (
     <div className="mb-5 bg-light p-5 d-flex align-items-center justify-content-between">
       <div>
@@ -21,7 +22,7 @@ const CartItem = (props) => {
       <div>
         <div>
           Amount:
-          {(cartItem && cartItem.amount) || "0"}
+          {(item && item.amount) || "0"}
         </div>
         <button className="btn btn-primary" onClick={addHandler}>
           +

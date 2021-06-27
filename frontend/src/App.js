@@ -3,15 +3,16 @@ import React from "react";
 import Header from "./Components/Header/Header";
 import ItemsList from "./Components/Items/ItemsList";
 import Cart from "./Components/Cart";
-import { CartDataProvider } from "./store/cart-data";
+import store from "./store/store";
+import { Provider } from "react-redux";
 
 function App() {
   return (
-    <CartDataProvider>
+    <Provider store={store}>
       <Header />
       <Cart />
       <ItemsList />
-    </CartDataProvider>
+    </Provider>
   );
 }
 

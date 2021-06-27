@@ -1,4 +1,5 @@
-import CartData from "../store/cart-data";
+import { useSelector, useDispatch } from "react-redux";
+import { addItem, removeItem, clear, toggle } from "../store/cartSlice";
 import { Modal } from "react-bootstrap";
 import { useContext, useState } from "react";
 import CartItem from "./CartItem";
@@ -6,7 +7,11 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 const Cart = () => {
   const { user } = useAuth0();
+  const dispatch = useDispatch();
+  const cart = useSelector((state) => state.cart);
   const [isSaved, setIsSaved] = useState(false);
+  const reducer = (sum, item) => sum + item.price * item.amount;
+
   const checkoutHandler = async () => {
     const data = cart.items.map((item) => {
       return { _id: item._id, amount: item.amount };
@@ -19,13 +24,11 @@ const Cart = () => {
       body: JSON.stringify({ items: data, customerName: user.email }),
     });
     setIsSaved(await response.json());
-    cart.setItems([]);
+    dispatch(clear());
   };
 
-  const reducer = (sum, item) => sum + item.price * item.amount;
-  const cart = useContext(CartData);
   return (
-    <Modal show={cart.visible} onHide={cart.toggleVisi}>
+    <Modal show={cart.visible} onHide={() => dispatch(toggle())}>
       <Modal.Header closeButton>
         <Modal.Title>{user && user.nickname}'s Cart</Modal.Title>
       </Modal.Header>
@@ -47,7 +50,13 @@ const Cart = () => {
         <button className="btn btn-primary" onClick={checkoutHandler}>
           Checkout
         </button>
-        <button className="btn btn-secondary" onClick={cart.toggleVisi}>
+        <button
+          className="btn btn-secondary"
+          onClick={() => {
+            dispatch(toggle());
+            setIsSaved(false);
+          }}
+        >
           Close
         </button>
       </Modal.Footer>

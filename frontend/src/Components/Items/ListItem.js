@@ -1,19 +1,18 @@
-import { useContext } from "react";
-import CartData from "../../store/cart-data";
+import { useSelector, useDispatch } from "react-redux";
+import { addItem, removeItem } from "../../store/cartSlice";
 
 const ListItem = (props) => {
-  const cart = useContext(CartData);
+  const dispatch = useDispatch();
+  const item = useSelector((state) => {
+    return state.cart.items.find((item) => item._id === props.item._id);
+  });
 
   const addHandler = () => {
-    cart.addItem(props.item);
+    dispatch(addItem(props.item));
   };
   const removeHandler = () => {
-    cart.removeItem(props.item);
+    dispatch(removeItem(props.item));
   };
-
-  const cartItem =
-    cart.items.find((item) => item._id === props.item._id) &&
-    cart.items.find((item) => item._id === props.item._id).amount;
 
   return (
     <div className="mb-5 bg-light p-5 d-flex align-items-center justify-content-between">
@@ -23,7 +22,7 @@ const ListItem = (props) => {
         <div className="fw-bolder">{props.item.price}$</div>
       </div>
       <div>
-        <div>Amount: {cartItem || "0"}</div>
+        <div>Amount: {(item && item.amount) || "0"}</div>
         <button className="btn btn-primary" onClick={addHandler}>
           +
         </button>
