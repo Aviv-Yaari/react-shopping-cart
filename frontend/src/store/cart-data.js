@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 const CartData = React.createContext({
   items: [],
+  setItems: () => {},
   addItem: () => {},
   removeItem: () => {},
   findItem: () => {},
@@ -13,30 +14,28 @@ export const CartDataProvider = (props) => {
   const [items, setItems] = useState([]);
   const [visible, setVisible] = useState(false);
 
-  const addToArr = (inputItem, inputArr) => {
-    let found = false;
-    let newArr = inputArr.map((item) => {
-      if (item.id === inputItem.id) {
-        found = true;
-        item.amount = item.amount + 1;
+  // Add item to cart:
+  const addItem = (inputItem) => {
+    setItems((itemsArr) => {
+      let newArr;
+      const index = itemsArr.findIndex((item) => item._id === inputItem._id);
+      if (index === -1) {
+        newArr = [...itemsArr, { ...inputItem, amount: 1 }];
+      } else {
+        itemsArr[index].amount++;
+        newArr = [...itemsArr];
       }
-      return item;
+      return newArr;
     });
-
-    if (!found) newArr = [...inputArr, { ...inputItem, amount: 1 }];
-    return newArr;
   };
 
-  const addItem = (item) => {
-    setItems((oldArr) => addToArr(item, oldArr));
-  };
-
+  // Remove item from cart:
   const removeFromArr = (inputItem, inputArr) => {
     return inputArr.filter((item) => {
-      if (item.id === inputItem.id) {
+      if (item._id === inputItem._id) {
         item.amount--;
       }
-      return !(item.id === inputItem.id && item.amount === 0);
+      return !(item._id === inputItem._id && item.amount === 0);
     });
   };
 
@@ -44,9 +43,8 @@ export const CartDataProvider = (props) => {
     setItems((oldArr) => removeFromArr(item, oldArr));
   };
 
-  const findItem = (inputItem) => {
-    return items.find((item) => item.id === inputItem.id);
-  };
+  const findItem = (inputItem) =>
+    items.find((item) => item._id === inputItem._id);
 
   const toggleVisi = () => {
     setVisible(!visible);
@@ -54,7 +52,15 @@ export const CartDataProvider = (props) => {
 
   return (
     <CartData.Provider
-      value={{ items, addItem, removeItem, findItem, toggleVisi, visible }}
+      value={{
+        items,
+        setItems,
+        addItem,
+        removeItem,
+        findItem,
+        toggleVisi,
+        visible,
+      }}
     >
       {props.children}
     </CartData.Provider>

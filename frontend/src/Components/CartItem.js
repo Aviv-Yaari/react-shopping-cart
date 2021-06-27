@@ -1,4 +1,4 @@
-import CartData from "../cart-data";
+import CartData from "../store/cart-data";
 import { useContext } from "react";
 
 const CartItem = (props) => {
@@ -10,6 +10,8 @@ const CartItem = (props) => {
   const removeHandler = () => {
     cart.removeItem(props.item);
   };
+
+  const cartItem = cart.findItem(props.item);
   return (
     <div className="mb-5 bg-light p-5 d-flex align-items-center justify-content-between">
       <div>
@@ -18,9 +20,8 @@ const CartItem = (props) => {
       </div>
       <div>
         <div>
-          Amount:{" "}
-          {(cart.findItem(props.item) && cart.findItem(props.item).amount) ||
-            "0"}
+          Amount:
+          {(cartItem && cartItem.amount) || "0"}
         </div>
         <button className="btn btn-primary" onClick={addHandler}>
           +
